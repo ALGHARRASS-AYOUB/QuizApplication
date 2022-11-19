@@ -2,4 +2,14 @@
     <string name="app_name">QuizApplication</string>
     <string name="start_session">enter your name and start your session</string>
     <string name="name"></string>
+
+    <string name="score_string">score</string>
+    <string name="time_text">00</string>
+    <string name="score_text">0</string>
+    <string name="option_1">option_1</string>
+    <string name="option_2" />
+    <string name="option_3">option _3</string>
+    <string name="option_4">option_4</string>
+    <string name="option_5">option_5</string>
+    <string name="next">next</string>
 </resources>
