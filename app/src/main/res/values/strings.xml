@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">QuizApplication</string>
     <string name="start_session">enter your name and start your session</string>
+    <string name="name"></string>
 </resources>
