@@ -25,6 +25,7 @@ public class QuizDBHelper extends SQLiteOpenHelper {
     public QuizDBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null,DATABASE_VERSION);
          db=this.getReadableDatabase();
+         this.removeDate();
         this.fillDB(db);
 
     }
@@ -99,31 +100,31 @@ public class QuizDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public Set<Question> getAllQuestions(){
-        String qr="SELECT * FROM "+QuizContract.QuestionEntry.TABLE_NAME+" ;";
-        Cursor curssor= getReadableDatabase().rawQuery(qr,null);
-        Cursor cursor=db.rawQuery(qr,null      );
-        Set<Question> questions=new HashSet<Question>();
+    public  HashSet<Question> getAllQuestions(){
+        HashSet<Question> allQs=new HashSet<>();
+        ArrayList<String> options=new ArrayList<>();
+        Cursor cursor=this.db.rawQuery("SELECT * FROM "+QuizContract.QuestionEntry.TABLE_NAME,null);
 
-        if(cursor.getCount()>0){
-            Log.v("cursor.getCount()",String.valueOf(cursor.getCount()));
-            cursor.moveToFirst();
+        if(cursor.moveToFirst()){
+            Log.v("the get count ==>",String.valueOf(cursor.getCount()));
+            do {
+                Question q=new Question();
+                q.setQuestion_name(cursor.getString(1));
+                options.add(cursor.getString(2));
+                options.add(cursor.getString(3));
+                options.add(cursor.getString(4));
+                options.add(cursor.getString(5));
+                options.add(cursor.getString(6));
+                q.setAnswer(cursor.getString(7));
+                q.setOptions(options);
+                allQs.add(q);
+            }while (cursor.moveToNext());
         }
-
-        while (!cursor.isLast()){
-            String name=cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_NAME);
-            String answer=cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_ANSWER);
-            ArrayList<String> options=new ArrayList<>();
-            options.add(cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_OPTION_1));
-            options.add(cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_OPTION_2));
-            options.add(cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_OPTION_3));
-            options.add(cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_OPTION_4));
-            options.add(cursor.getExtras().getString(QuizContract.QuestionEntry.COLUMN_OPTION_5));
-            questions.add(new Question(name,options,answer));
-
-            cursor.moveToNext();
-        }
-        cursor.close();
-        return  questions;
+        return allQs;
     }
+
+    public void removeDate(){
+        this.db.execSQL("DELETE FROM "+QuizContract.QuestionEntry.TABLE_NAME);
+    }
+
 }
