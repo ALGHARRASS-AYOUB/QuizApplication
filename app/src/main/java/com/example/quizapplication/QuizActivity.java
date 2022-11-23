@@ -205,8 +205,6 @@ public class QuizActivity extends AppCompatActivity {
 
     }
 
-
-
     private boolean isCorrect(String choice,String answer){
         return  (choice.equals(answer))?true:false;
     }
@@ -226,6 +224,7 @@ public class QuizActivity extends AppCompatActivity {
         other_options.add(option1);
         other_options.add(option2);
         other_options.add(option3);
+
         other_options.add(option4);
         other_options.add(option5);
         for ( AppCompatButton option:other_options) {
