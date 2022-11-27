@@ -3,6 +3,8 @@ package com.example.quizapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
@@ -27,11 +29,14 @@ public class QuizActivity extends AppCompatActivity {
     AppCompatButton option1,option2,option3,option4,option5;
     AppCompatButton next;
 
+    boolean choosen=false;
     int numberOfQ;
     int score_count;
+    final int SCORE_INCREMENT=10;
     String choice="";
     QuizDBHelper sqlDbHelper;
     ArrayList<Question> questions;
+    Resources rs;
 
 
 
@@ -42,7 +47,6 @@ public class QuizActivity extends AppCompatActivity {
         guestname=this.getIntent().getStringExtra(getString(R.string.name));
         Toast.makeText(this, "hello, "+guestname, Toast.LENGTH_SHORT).show();
 
-        //load questions
         sqlDbHelper=new QuizDBHelper(this);
         questions=new ArrayList<>(sqlDbHelper.getAllQuestions());
         //get xml elements
@@ -57,14 +61,21 @@ public class QuizActivity extends AppCompatActivity {
         option4=findViewById(R.id.option4);
         option5=findViewById(R.id.option5);
         next=findViewById(R.id.next);
+        Intent finalResultIntent=new Intent(this,FinalActivity.class);
 
-        load_date(numberOfQ);
+
         numberOfQ=0;
         score_count=0;
+
+        load_question(numberOfQ);
 
         option1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(choosen){
+                    return;
+                }
+                    choosen=true;
                 choice=option1.getText().toString();
                 if(isCorrect(choice,questions.get(numberOfQ).getAnswer())){
                     option1.setBackgroundResource(R.drawable.correct_layout_green );
@@ -88,6 +99,10 @@ public class QuizActivity extends AppCompatActivity {
         option2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(choosen){
+                    return;
+                }
+                choosen=true;
                 choice=option2.getText().toString();
                 if(isCorrect(choice,questions.get(numberOfQ).getAnswer())){
                     option2.setBackgroundResource(R.drawable.correct_layout_green );
@@ -112,6 +127,10 @@ public class QuizActivity extends AppCompatActivity {
         option3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(choosen){
+                    return;
+                }
+                choosen=true;
                 choice=option3.getText().toString();
                 if(isCorrect(choice,questions.get(numberOfQ).getAnswer())){
                     option3.setBackgroundResource(R.drawable.correct_layout_green );
@@ -137,6 +156,10 @@ public class QuizActivity extends AppCompatActivity {
         option4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(choosen){
+                    return;
+                }
+                choosen=true;
                 choice=option4.getText().toString();
                 if(isCorrect(choice,questions.get(numberOfQ).getAnswer())){
                     option4.setBackgroundResource(R.drawable.correct_layout_green );
@@ -161,6 +184,10 @@ public class QuizActivity extends AppCompatActivity {
         option5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(choosen){
+                    return;
+                }
+                choosen=true;
                 choice=option5.getText().toString();
                 if(isCorrect(choice,questions.get(numberOfQ).getAnswer())){
                     option5.setBackgroundResource(R.drawable.correct_layout_green );
@@ -187,36 +214,58 @@ public class QuizActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                if(isCorrect(choice,questions.get(numberOfQ).getAnswer()))
-                {
-
-                score_count+=10;
-                    Toast.makeText(QuizActivity.this, "correct", Toast.LENGTH_SHORT).show();
+                if(numberOfQ== questions.size()-1){
+                    score_count=(isCorrect(choice,questions.get(numberOfQ).getAnswer()))? score_count+SCORE_INCREMENT:score_count;
+                    rs=getResources();
+                    String keyScore=rs.getString(R.string.score_text);
+                    String keyName=rs.getString(R.string.name);
+                    finalResultIntent.putExtra(keyScore,score_count);
+                    finalResultIntent.putExtra(keyName,guestname);
+                    startActivity(finalResultIntent);
+                    finish();
                 }
+                else{
+                    if(isCorrect(choice,questions.get(numberOfQ).getAnswer()))
+                    {
+                        score_count+=SCORE_INCREMENT;
+                    }
 
-                numberOfQ++;
-                load_date(numberOfQ);
-                score.setText(String.valueOf(score_count));
-                question_number.setText(String.valueOf(numberOfQ)+"/"+String.valueOf(questions.size()));
+                    numberOfQ++;
+                    load_question(numberOfQ);
+                    choice="";
+                    score.setText(String.valueOf(score_count));
+                    question_number.setText(String.valueOf(numberOfQ+1)+"/"+String.valueOf(questions.size()));
+                    resertBackgroundOptions();
+
+                }
             }
         });
 
 
 
+
+    }
+
+    private void resetDrawableBackground() {
+        option1.setBackgroundResource(R.drawable.white_background_option);
+        option2.setBackgroundResource(R.drawable.white_background_option);
+        option3.setBackgroundResource(R.drawable.white_background_option);
+        option4.setBackgroundResource(R.drawable.white_background_option);
+        option5.setBackgroundResource(R.drawable.white_background_option);
     }
 
     private boolean isCorrect(String choice,String answer){
         return  (choice.equals(answer))?true:false;
     }
 
-    private void load_date(int numberOfQ) {
+    private void load_question(int number_quest) {
 
-        question.setText(questions.get(numberOfQ).question_name);
-        option1.setText(questions.get(numberOfQ).getOptions().get(0));
-        option2.setText(questions.get(numberOfQ).getOptions().get(1));
-        option3.setText(questions.get(numberOfQ).getOptions().get(2));
-        option4.setText(questions.get(numberOfQ).getOptions().get(3));
-        option5.setText(questions.get(numberOfQ).getOptions().get(4));
+        question.setText(questions.get(number_quest).question_name);
+        option1.setText(questions.get(number_quest).getOptions().get(0));
+        option2.setText(questions.get(number_quest).getOptions().get(1));
+        option3.setText(questions.get(number_quest).getOptions().get(2));
+        option4.setText(questions.get(number_quest).getOptions().get(3));
+        option5.setText(questions.get(number_quest).getOptions().get(4));
     }
 
     private void resertBackgroundOptions(){
@@ -230,5 +279,9 @@ public class QuizActivity extends AppCompatActivity {
         for ( AppCompatButton option:other_options) {
                 option.setBackgroundResource(R.drawable.white_background_option);
          }
+        choosen=false;
     }
+
+    // to  final result
+
 }

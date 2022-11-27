@@ -25,17 +25,21 @@ public class MainActivity extends AppCompatActivity {
 
         name_input=findViewById(R.id.name_edit_text);
         start_button=findViewById(R.id.start_session_button);
-
+        //from FinalQuizActivity
+        Intent finalIntent=getIntent();
+        if(finalIntent!=null){
+            String keyName=getResources().getString(R.string.name);
+            name=finalIntent.getStringExtra(keyName);
+            name_input.setText(name);
+        }
         start_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 name=name_input.getText().toString();
                 // Perform action on click
                 Intent quizIntent=new Intent(getApplicationContext(),QuizActivity.class);
-
                 String key;
                 Resources rs=getResources();
                 key=rs.getString(R.string.name);
-
                 if(name.isEmpty() || name.equals("")){
                     Toast.makeText(MainActivity.this, "enter your name please", Toast.LENGTH_SHORT).show();
                 }
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 // currentContext.startActivity(activityChangeIntent);
 
                 MainActivity.this.startActivity(quizIntent);
+                finish();
                 }
             }
         });
