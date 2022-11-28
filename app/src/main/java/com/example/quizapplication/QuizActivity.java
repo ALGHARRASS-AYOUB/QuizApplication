@@ -48,7 +48,7 @@ public class QuizActivity extends AppCompatActivity {
         Toast.makeText(this, "hello, "+guestname, Toast.LENGTH_SHORT).show();
 
         sqlDbHelper=new QuizDBHelper(this);
-        questions=new ArrayList<>(sqlDbHelper.getAllQuestions());
+        questions=sqlDbHelper.getAllQuestions();
         //get xml elements
         score=findViewById(R.id.score);
         time=findViewById(R.id.time);

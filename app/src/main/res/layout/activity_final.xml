@@ -66,7 +66,7 @@
                 android:layout_weight="0.4"
                 android:text="@string/score_string"
                 android:textColor="@color/white"
-                android:textSize="24dp" />
+                android:textSize="18sp" />
 
             <RatingBar
                 android:id="@+id/score_rating_bar"
@@ -74,10 +74,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="6dp"
                 android:layout_weight="0.2"
+                android:clickable="false"
+
                 android:numStars="4"
-                android:stepSize="0.5"
                 android:progressBackgroundTint="#ff999999"
-                />
+                android:stepSize="0.5" />
 
             <TextView
                 android:id="@+id/score_result"
@@ -86,7 +87,7 @@
                 android:layout_weight="0.4"
                 android:text=""
                 android:textColor="@color/white"
-                android:textSize="24dp" />
+                android:textSize="18sp" />
 
 
         </LinearLayout>

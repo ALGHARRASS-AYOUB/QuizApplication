@@ -39,6 +39,7 @@ public class FinalActivity extends AppCompatActivity {
         score=intent.getIntExtra(keyScore,0);
         float scoreVal=score*4/100;
         rate.setRating(scoreVal);
+        rate.setClickable(false);
         if(score>=80 && score<=100){
             message.setText(" Excellent ! Mr "+name);
         }

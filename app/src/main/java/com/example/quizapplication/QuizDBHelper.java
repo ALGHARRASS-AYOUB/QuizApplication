@@ -83,15 +83,15 @@ public class QuizDBHelper extends SQLiteOpenHelper {
     public void fillDB(SQLiteDatabase db){
      List<Question> questions = new ArrayList<Question>(Arrays.asList(
                 new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("who has invented the blockchain?",Arrays.asList("elon musk", "bill gates", "satushi nakamoto", "ayoub", "natasha rabilla"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac"),
-                new Question("wich chioce is the compiler of java ?",Arrays.asList("javac", "ansi89", "ansi99", "gcc", "sdk"), "javac")
+                new Question("who has invented the blockchain?",Arrays.asList("elon musk", "bill gates", "satushi nakamoto", "ayoub", "natasha rabilla"), "satushi nakamoto"),
+                new Question("which is the first programming language ?",Arrays.asList("java", "c++", "c", "assembly", "short code"), "short code"),
+                new Question("In which year the c++ programming language was created ?",Arrays.asList("1997", "1979", "1983", "2001", "1999"), "1983"),
+                new Question("wich from the next options is not aprogramming language ?",Arrays.asList("Actor", "coq", "Eiffel", "brainfuck", "rawdon"), "rawdon"),
+                new Question("Which of these is not a core data type ?",Arrays.asList("List", "Dictionary", "Tuple", "Class", "Collection"), "Class"),
+                new Question("Which of the following is a Python tuple ?",Arrays.asList("[1,2,3,4]", "(1,2,3,4)", "{1,2,3,4}", "{}", "[\"a\",\"b\"]"), "(1,2,3,4)"),
+                new Question("what the OOP means ?",Arrays.asList("Object Organized Progress", "Object Oriented Programming", "Object Oriented Progress", "Ordered Objects Poping", "none from above options"), "Object Oriented Programming"),
+                new Question("What is the built in library function to compare two strings ?",Arrays.asList("string_cmp()", "strcmp()", "equals()", "str_compare()", "String.compare()"), "strcmp()"),
+                new Question("What does P2P stand for in blockchain ?",Arrays.asList("Password to Password", "Peer to Peer", " Product to Product", " Private to Public", "none of the above"), "Peer to Peer")
                 ));
 
         for (Question q: questions) {
@@ -100,14 +100,14 @@ public class QuizDBHelper extends SQLiteOpenHelper {
 
     }
 
-    public  HashSet<Question> getAllQuestions(){
-        HashSet<Question> allQs=new HashSet<>();
-        ArrayList<String> options=new ArrayList<>();
+    public  ArrayList<Question> getAllQuestions(){
+        ArrayList<Question> allQs=new ArrayList<Question>();
         Cursor cursor=this.db.rawQuery("SELECT * FROM "+QuizContract.QuestionEntry.TABLE_NAME,null);
 
         if(cursor.moveToFirst()){
             Log.v("the get count ==>",String.valueOf(cursor.getCount()));
             do {
+                ArrayList<String> options=new ArrayList<>();
                 Question q=new Question();
                 q.setQuestion_name(cursor.getString(1));
                 options.add(cursor.getString(2));
