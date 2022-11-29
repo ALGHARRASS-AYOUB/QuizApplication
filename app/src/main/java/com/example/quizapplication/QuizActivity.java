@@ -1,5 +1,6 @@
 package com.example.quizapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
@@ -9,8 +10,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,16 +23,26 @@ import android.widget.Toast;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Dictionary;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class QuizActivity extends AppCompatActivity {
     String guestname;
-    TextView score,time,question_number,question;
+    TextView score,question_number,question;
     ImageView back;
     AppCompatButton option1,option2,option3,option4,option5;
     AppCompatButton next;
+    //stuff for timer
+    Handler handler=new Handler();
+    Chronometer chronometer;
+    TimerTask timer_task;
+    int TIMER_LATENCY=0;
+    int TIMER_TIME=30000;//ms
+    Thread timeThread;
 
     boolean choosen=false;
     int numberOfQ;
@@ -40,18 +55,21 @@ public class QuizActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
         guestname=this.getIntent().getStringExtra(getString(R.string.name));
         Toast.makeText(this, "hello, "+guestname, Toast.LENGTH_SHORT).show();
+
 
         sqlDbHelper=new QuizDBHelper(this);
         questions=sqlDbHelper.getAllQuestions();
         //get xml elements
         score=findViewById(R.id.score);
-        time=findViewById(R.id.time);
+        chronometer=findViewById(R.id.time);
         question=findViewById(R.id.question);
         question_number=findViewById(R.id.question_number);
         back=findViewById(R.id.back);
@@ -67,7 +85,29 @@ public class QuizActivity extends AppCompatActivity {
         numberOfQ=0;
         score_count=0;
 
+
+        rs=getResources();
+        String keyScore=rs.getString(R.string.score_text);
+        String keyName=rs.getString(R.string.name);
+
+        startTimer(chronometer);
+        chronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            @Override
+            public void onChronometerTick(Chronometer chronometer) {
+                long offset=SystemClock.elapsedRealtime()-chronometer.getBase();
+                if(offset>=TIMER_TIME-TIMER_TIME*0.2 )
+                    chronometer.setTextColor(getResources().getColor(R.color.red));
+                if(isTimeOverAfter(chronometer,TIMER_TIME)){
+                   chronometer.stop();
+                    startFinalActivity(finalResultIntent,keyScore,score_count,keyName,guestname);
+
+                }
+
+            }
+        });
         load_question(numberOfQ);
+
+
 
         option1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,13 +256,8 @@ public class QuizActivity extends AppCompatActivity {
 
                 if(numberOfQ== questions.size()-1){
                     score_count=(isCorrect(choice,questions.get(numberOfQ).getAnswer()))? score_count+SCORE_INCREMENT:score_count;
-                    rs=getResources();
-                    String keyScore=rs.getString(R.string.score_text);
-                    String keyName=rs.getString(R.string.name);
-                    finalResultIntent.putExtra(keyScore,score_count);
-                    finalResultIntent.putExtra(keyName,guestname);
-                    startActivity(finalResultIntent);
-                    finish();
+
+                    startFinalActivity(finalResultIntent,keyScore,score_count,keyName,guestname);
                 }
                 else{
                     if(isCorrect(choice,questions.get(numberOfQ).getAnswer()))
@@ -243,8 +278,34 @@ public class QuizActivity extends AppCompatActivity {
 
 
 
+    }
+
+    private void startFinalActivity(Intent intent,String keyScore,int score_count,String keyName,String guestname) {
+        intent.putExtra(keyScore,score_count);
+        intent.putExtra(keyName,guestname);
+        startActivity(intent);
+        finish();
+    }
+
+    private void startTimer(Chronometer c) {
+        //set  a timer
+        c.setBase(SystemClock.elapsedRealtime());
+        c.start();
+
 
     }
+
+    private  boolean isTimeOverAfter(Chronometer c,int time){
+        long t = SystemClock.elapsedRealtime()-c.getBase();
+        Log.v("time is :",String.valueOf(t));
+        return t>time ;
+    }
+
+// timer thread
+
+
+
+
 
     private void resetDrawableBackground() {
         option1.setBackgroundResource(R.drawable.white_background_option);
@@ -282,6 +343,38 @@ public class QuizActivity extends AppCompatActivity {
         choosen=false;
     }
 
-    // to  final result
+
+
+//    class MyTimerHandler extends  Handler{
+//
+//        @Override
+//        public void handleMessage(@NonNull Message msg) {
+//            super.handleMessage(msg);
+//
+//
+//
+//        }
+//    }
 
 }
+
+//
+//        timeThread=new Thread(new Runnable() {
+//@Override
+//public void run() {
+//
+//        runOnUiThread(new Runnable() {
+//@Override
+//public void run() {
+//
+//        while (!isTimeOverAfter(chronometer,TIMER_TIME)){
+//        if(chronometer.getBase()>TIMER_TIME*0.01)
+//        chronometer.setTextColor(getResources().getColor(R.color.red));
+//
+//        }
+//        chronometer.stop();
+//        Toast.makeText(QuizActivity.this, "time is over ", Toast.LENGTH_SHORT).show();
+//        }
+//        });
+//        }
+//        });

@@ -70,11 +70,11 @@
                     android:src="@drawable/timer_icon"
                     android:layout_gravity="center"
                     />
-              <TextView
+              <Chronometer
                   android:id="@+id/time"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
-                  android:text="@string/time_text"
+
                   android:textColor="@color/white"
                   android:layout_gravity="center"
                   android:padding="10dp"
